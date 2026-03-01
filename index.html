@@ -1552,7 +1552,7 @@
   <div class="cta-title reveal">Simulate Your<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--teal-light)">Governance Alignment Score</em></div>
   <p class="cta-sub reveal">Request a structured assessment or explore our methodology documentation to understand how BuitenScore can provide external governance visibility for your institution.</p>
   <div class="cta-actions reveal">
-    <a href="/cdn-cgi/l/email-protection#67040809130604132705120e13020914040815024904080a" class="btn-primary">Request a Demo</a>
+    <a href="mailto:contact@buitenscore.com" class="btn-primary">Request a Demo</a>
     <a href="#scoring" class="btn-secondary">Download Methodology Booklet</a>
   </div>
 </section>
@@ -1570,7 +1570,7 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
@@ -1602,4 +1602,11 @@
   const nav = document.querySelector('nav');
   window.addEventListener('scroll', () => {
     if (window.scrollY > 60) {
- 
+      nav.style.background = 'rgba(10,22,40,0.95)';
+    } else {
+      nav.style.background = 'rgba(10,22,40,0.85)';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuitenScore — Hospital Governance Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #132040;
+    --navy-light: #1e3060;
+    --slate: #2a4a7f;
+    --teal: #0f6e7a;
+    --teal-light: #14909f;
+    --gold: #c8a96e;
+    --gold-light: #e2c48e;
+    --white: #f5f3ee;
+    --white-pure: #ffffff;
+    --muted: #8a9ab5;
+    --border: rgba(200,169,110,0.2);
+    --border-light: rgba(255,255,255,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 4rem;
+    border-bottom: 1px solid var(--border-light);
+    background: rgba(10,22,40,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .nav-logo-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--white-pure);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.1em;
+  }
+
+  .nav-cta:hover {
+    background: var(--gold) !important;
+    color: var(--navy) !important;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 4rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 60% at 80% 50%, rgba(15,110,122,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(30,48,96,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,169,110,0.04) 0%, transparent 50%);
+  }
+
+  .hero-grid-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(200,169,110,0.08), transparent);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-eyebrow-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-eyebrow-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.08;
+    color: var(--white-pure);
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--teal-light);
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 2px;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .badge-dot.teal { background: var(--teal-light); }
+  .badge-dot.gold { background: var(--gold); }
+  .badge-dot.red { background: #e06060; }
+
+  .hero-actions {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 0.9rem 2.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(200,169,110,0.25);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.9rem 2.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* SCORE CARD — floating right in hero */
+  .hero-score-card {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    background: rgba(19,32,64,0.7);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+    z-index: 2;
+  }
+
+  .score-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .score-ring {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--white-pure);
+    transform: rotate(0deg);
+  }
+
+  .score-dims {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .score-dim {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+  }
+
+  .score-dim-name { color: var(--muted); }
+  .score-dim-val { color: var(--white); font-family: 'DM Mono', monospace; }
+
+  .score-dim-bar {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-top: 2px;
+  }
+
+  .score-dim-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--teal), var(--gold));
+    border-radius: 1px;
+    transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* SECTION BASE */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 7rem 4rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--white-pure);
+    margin-bottom: 1.5rem;
+  }
+
+  .section-body {
+    color: var(--muted);
+    max-width: 640px;
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: 0 4rem;
+  }
+
+  /* WHAT IS — two columns */
+  .what-is-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+    margin-top: 4rem;
+  }
+
+  .eval-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .eval-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .eval-list li:last-child { border-bottom: none; }
+
+  .eval-icon {
+    width: 32px; height: 32px;
+    min-width: 32px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .principle-card {
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    padding: 1.2rem;
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.3s;
+  }
+
+  .principle-card:hover { border-color: var(--border); }
+
+  .principle-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--teal-light);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .principle-body {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* WHAT IT IS NOT */
+  .not-section {
+    background: rgba(10,22,40,0.5);
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .not-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border-light);
+    margin-top: 3rem;
+    border: 1px solid var(--border-light);
+  }
+
+  .not-card {
+    background: var(--navy);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: background 0.3s;
+  }
+
+  .not-card:hover { background: rgba(19,32,64,0.8); }
+
+  .not-x {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: rgba(224,96,96,0.5);
+    line-height: 1;
+  }
+
+  .not-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    margin-top: 4rem;
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 5%;
+    right: 5%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+
+  .step {
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step-num {
+    width: 56px; height: 56px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    background: var(--navy);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-top: 0.5rem;
+  }
+
+  .step-body {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* LAYERS inside step 4 */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+  }
+
+  .layer-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .layer-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal-light);
+    width: 18px;
+  }
+
+  /* SCORING */
+  .scoring-section {
+    background: linear-gradient(135deg, rgba(15,110,122,0.05) 0%, transparent 50%);
+  }
+
+  .scoring-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+
+  .score-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .score-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .score-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .score-bar-name {
+    font-size: 0.8rem;
+    color: var(--white);
+  }
+
+  .score-bar-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+  }
+
+  .score-bar-track {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--teal), var(--teal-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-bar-fill.animated { transform: scaleX(1); }
+
+  .score-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .big-score {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8rem;
+    font-weight: 300;
+    color: var(--white-pure);
+    line-height: 1;
+    position: relative;
+  }
+
+  .big-score-denom {
+    font-size: 2rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .score-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+
+  /* ARCHITECTURE */
+  .arch-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .arch-card {
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    padding: 1.8rem;
+    background: rgba(255,255,255,0.015);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .arch-card:hover {
+    border-color: var(--border);
+    transform: translateY(-3px);
+  }
+
+  .arch-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--teal), var(--gold));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .arch-card:hover::before { opacity: 1; }
+
+  .arch-card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: rgba(200,169,110,0.12);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .arch-card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 0.7rem;
+  }
+
+  .arch-card-body {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* RELATION TABLE */
+  .relation-section { }
+
+  .relation-table-wrap {
+    margin-top: 3rem;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .relation-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .relation-table th {
+    background: rgba(19,32,64,0.8);
+    padding: 1rem 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .relation-table th:first-child {
+    border-right: 1px solid var(--border-light);
+  }
+
+  .relation-table td {
+    padding: 1.1rem 2rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+  }
+
+  .relation-table td:first-child {
+    color: var(--white);
+    border-right: 1px solid var(--border-light);
+    font-size: 0.8rem;
+  }
+
+  .relation-table tr:last-child td { border-bottom: none; }
+
+  .relation-table tr:hover td { background: rgba(255,255,255,0.015); }
+
+  /* WHO IS IT FOR */
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border-light);
+    margin-top: 3rem;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .audience-card {
+    background: var(--navy);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: background 0.3s;
+  }
+
+  .audience-card:hover { background: rgba(15,110,122,0.06); }
+
+  .audience-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .audience-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--white-pure);
+  }
+
+  .audience-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .audience-features li {
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .audience-features li::before {
+    content: '→';
+    color: var(--teal-light);
+    font-size: 0.7rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  /* LEGAL */
+  .legal-section {
+    background: rgba(10,22,40,0.6);
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .legal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  .legal-does-not {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .legal-does-not li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .legal-does-not li:last-child { border-bottom: none; }
+
+  .no-mark {
+    color: rgba(224,96,96,0.7);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .legal-note {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2rem;
+    background: rgba(200,169,110,0.03);
+  }
+
+  .legal-note-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .legal-note-text {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 9rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(15,110,122,0.1) 0%, transparent 70%);
+  }
+
+  .cta-section .section-label { justify-content: center; }
+  .cta-section .section-label::before { display: none; }
+
+  .cta-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white-pure);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .cta-sub {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border-light);
+    padding: 3rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--white-pure);
+  }
+
+  .footer-parent {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* MOBILE */
+  @media (max-width: 1100px) {
+    .hero-score-card { display: none; }
+    .what-is-grid, .scoring-grid, .legal-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .not-grid, .steps, .arch-cards, .audience-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 1.2rem 2rem; }
+    section { padding: 5rem 2rem; }
+    .hero { padding: 8rem 2rem 5rem; }
+    .divider { margin: 0 2rem; }
+    footer { padding: 2.5rem 2rem; flex-direction: column; gap: 1.5rem; text-align: center; }
+    .footer-right { text-align: center; }
+  }
+
+  @media (max-width: 680px) {
+    .nav-links { display: none; }
+    .not-grid, .steps, .arch-cards, .audience-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="nav-logo-name">BuitenScore</span>
+    <span class="nav-logo-sub">A Governance Module of Buiten.ai</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#what-is">What It Is</a></li>
+    <li><a href="#how-it-works">Process</a></li>
+    <li><a href="#scoring">Scoring</a></li>
+    <li><a href="#for-whom">Stakeholders</a></li>
+    <li><a href="#cta" class="nav-cta">Request Assessment</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-line" style="left:33%"></div>
+  <div class="hero-grid-line" style="left:66%"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <span class="hero-eyebrow-text">European Clinical Governance Infrastructure</span>
+    </div>
+
+    <h1>Structured<br>Clinical <em>Governance.</em><br>Measurable Alignment.</h1>
+
+    <p class="hero-sub">
+      BuitenScore is a voluntary, evidence-based hospital governance assessment system operating within the Buiten.ai Clinical Governance Infrastructure — producing a 0–100 Governance Alignment Score, not a payment verdict.
+    </p>
+
+    <div class="hero-badges">
+      <div class="badge">
+        <div class="badge-dot teal"></div>
+        Produces 0–100 Alignment Score
+      </div>
+      <div class="badge">
+        <div class="badge-dot red"></div>
+        No Reimbursement Decisions
+      </div>
+      <div class="badge">
+        <div class="badge-dot gold"></div>
+        Structured Comparability
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Request Assessment</a>
+      <a href="#scoring" class="btn-secondary">Download Methodology</a>
+    </div>
+  </div>
+
+  <!-- Floating Score Card -->
+  <div class="hero-score-card">
+    <div class="score-card-label">Governance Alignment Score</div>
+    <div class="score-ring">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.06)" stroke-width="3" fill="none"/>
+        <circle cx="50" cy="50" r="42" stroke="url(#scoreGrad)" stroke-width="3" fill="none"
+          stroke-dasharray="264" stroke-dashoffset="59" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0f6e7a"/>
+            <stop offset="100%" stop-color="#c8a96e"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-ring-num">78</div>
+    </div>
+    <div class="score-dims">
+      <div class="score-dim">
+        <span class="score-dim-name">Documentation</span>
+        <span class="score-dim-val">17/20</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:85%"></div></div>
+
+      <div class="score-dim">
+        <span class="score-dim-name">Diagnostic Coding</span>
+        <span class="score-dim-val">11/15</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:73%"></div></div>
+
+      <div class="score-dim">
+        <span class="score-dim-name">Indication Logic</span>
+        <span class="score-dim-val">16/20</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:80%"></div></div>
+
+      <div class="score-dim">
+        <span class="score-dim-name">Clinical–Billing</span>
+        <span class="score-dim-val">15/20</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:75%"></div></div>
+
+      <div class="score-dim">
+        <span class="score-dim-name">Complication Gov.</span>
+        <span class="score-dim-val">15/20</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:75%"></div></div>
+
+      <div class="score-dim">
+        <span class="score-dim-name">Continuity Simulation</span>
+        <span class="score-dim-val">4/5</span>
+      </div>
+      <div class="score-dim-bar"><div class="score-dim-fill" style="width:80%"></div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHAT IS -->
+<section id="what-is">
+  <div class="section-label">What Is BuitenScore</div>
+  <h2 class="section-title reveal">A structured checklist-based and<br>case-verified governance review system</h2>
+
+  <div class="what-is-grid">
+    <div class="reveal">
+      <p class="section-body" style="margin-bottom:2.5rem">
+        BuitenScore evaluates hospital governance across six dimensions, using documentation-based review and anonymized case sampling — producing structured comparability signals, not standardized rankings.
+      </p>
+      <ul class="eval-list">
+        <li>
+          <div class="eval-icon">01</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Documentation Integrity</strong><br>
+            Verification of clinical records, structured completeness, and traceability standards.
+          </div>
+        </li>
+        <li>
+          <div class="eval-icon">02</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Indication Appropriateness</strong><br>
+            Evidence-based justification review of procedures relative to documented diagnoses.
+          </div>
+        </li>
+        <li>
+          <div class="eval-icon">03</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Procedure–Diagnosis Alignment</strong><br>
+            Structural consistency between coded diagnoses and performed procedures.
+          </div>
+        </li>
+        <li>
+          <div class="eval-icon">04</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Clinical–Billing Consistency</strong><br>
+            Coherence between clinical documentation and billing submissions.
+          </div>
+        </li>
+        <li>
+          <div class="eval-icon">05</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Complication Governance</strong><br>
+            Structured handling, documentation, and review of clinical complications.
+          </div>
+        </li>
+        <li>
+          <div class="eval-icon">06</div>
+          <div>
+            <strong style="color:var(--white);font-size:0.82rem">Continuity Logic</strong><br>
+            Gatekeeper simulation and referral pathway integrity assessment.
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.2s">
+      <p style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem">Operating Principles</p>
+      <div class="principles-grid">
+        <div class="principle-card">
+          <div class="principle-title">Comparability</div>
+          <div class="principle-body">Structured comparability, not standardization. Context-sensitive interpretation across systems.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-title">Human Supervision</div>
+          <div class="principle-body">All signals generated under human-supervised, role-separated review layers.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-title">Risk-Adjusted</div>
+          <div class="principle-body">Scoring interpretation is risk-adjusted for case-mix and institutional context.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-title">Governance Layers</div>
+          <div class="principle-body">Role-separated review with conflict-of-interest declaration and QA verification.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem; padding:1.5rem; border:1px solid var(--border); border-radius:3px; background:rgba(200,169,110,0.03)">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem">Output</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--white-pure);margin-bottom:0.5rem">Governance Alignment Score</div>
+        <div style="font-size:0.8rem;color:var(--muted)">A 0–100 structured signal reflecting governance quality — not a payment verdict, reimbursement decision, or accreditation outcome.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHAT IT IS NOT -->
+<section class="not-section">
+  <div class="section-label">Scope Boundaries</div>
+  <h2 class="section-title reveal">What BuitenScore Is Not</h2>
+  <p class="section-body reveal">BuitenScore provides governance signals only. It operates entirely outside the authority domains below.</p>
+
+  <div class="not-grid reveal">
+    <div class="not-card">
+      <div class="not-x">×</div>
+      <div class="not-label">Not an accreditation replacement or equivalent</div>
+    </div>
+    <div class="not-card">
+      <div class="not-x">×</div>
+      <div class="not-label">Not an insurer or insurance-affiliated body</div>
+    </div>
+    <div class="not-card">
+      <div class="not-x">×</div>
+      <div class="not-label">Not a reimbursement authority or payment gateway</div>
+    </div>
+    <div class="not-card">
+      <div class="not-x">×</div>
+      <div class="not-label">Not a national or supranational regulator</div>
+    </div>
+    <div class="not-card">
+      <div class="not-x">×</div>
+      <div class="not-label">Not a clinical decision support system</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="section-label">Assessment Process</div>
+  <h2 class="section-title reveal">How BuitenScore Works</h2>
+  <p class="section-body reveal">A structured five-step process from scope definition to final Governance Alignment Score.</p>
+
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Scope Definition</div>
+      <div class="step-body">Department, timeframe, and procedure volume are defined and agreed prior to assessment commencement.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Self Assessment</div>
+      <div class="step-body">Evidence-based structured checklist completion with documentation upload via secure submission portal.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Case Sampling</div>
+      <div class="step-body">Anonymized minimum dataset submission from a stratified sample of clinical cases within scope.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Three-Layer Review</div>
+      <div class="step-body">
+        <div class="layers">
+          <div class="layer-tag"><span class="layer-num">L1</span> Structured consistency screening</div>
+          <div class="layer-tag"><span class="layer-num">L2</span> Clinical appropriateness review</div>
+          <div class="layer-tag"><span class="layer-num">L3</span> Continuity &amp; gatekeeper simulation</div>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-title">Alignment Score</div>
+      <div class="step-body">Governance Alignment Score (0–100) issued with structured breakdown and risk-adjusted interpretation.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SCORING -->
+<section id="scoring" class="scoring-section">
+  <div class="section-label">Scoring Structure</div>
+  <h2 class="section-title reveal">100-Point Governance Framework</h2>
+
+  <div class="scoring-grid">
+    <div class="score-bars reveal">
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Documentation Integrity</span>
+          <span class="score-bar-pts">20 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:1"></div></div>
+      </div>
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Indication &amp; Procedure Logic</span>
+          <span class="score-bar-pts">20 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:1"></div></div>
+      </div>
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Clinical–Billing Consistency</span>
+          <span class="score-bar-pts">20 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:1"></div></div>
+      </div>
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Complication Governance</span>
+          <span class="score-bar-pts">20 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:1"></div></div>
+      </div>
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Diagnostic Coding Alignment</span>
+          <span class="score-bar-pts">15 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:0.75"></div></div>
+      </div>
+      <div class="score-bar-item">
+        <div class="score-bar-header">
+          <span class="score-bar-name">Continuity Simulation</span>
+          <span class="score-bar-pts">5 pts</span>
+        </div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="--w:0.25"></div></div>
+      </div>
+
+      <div style="margin-top:1rem;padding:1.2rem;border:1px solid var(--border-light);border-radius:3px;font-size:0.75rem;color:var(--muted)">
+        All scoring subject to risk-adjusted interpretation under human oversight. Scores are not directly comparable across specialties without contextual calibration.
+      </div>
+    </div>
+
+    <div class="score-visual reveal" style="transition-delay:0.15s">
+      <div>
+        <div class="big-score">100<span class="big-score-denom"> pts</span></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--muted);text-align:center;margin-top:0.5rem">Total Governance Alignment</div>
+      </div>
+      <div class="score-note">
+        Risk-adjusted interpretation<br>
+        under human oversight<br>
+        ——<br>
+        Not a payment verdict<br>
+        Not a clinical directive
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ARCHITECTURE -->
+<section>
+  <div class="section-label">Governance Architecture</div>
+  <h2 class="section-title reveal">Built for Structural Integrity</h2>
+  <p class="section-body reveal">Every element of the BuitenScore process operates under documented governance controls, ensuring independence, reproducibility, and auditability.</p>
+
+  <div class="arch-cards">
+    <div class="arch-card reveal">
+      <div class="arch-card-num">01</div>
+      <div class="arch-card-title">Role-Separated Reviewers</div>
+      <div class="arch-card-body">Clinical, coding, and governance review functions are structurally separated to prevent conflict and ensure independent signal generation.</div>
+    </div>
+    <div class="arch-card reveal" style="transition-delay:0.1s">
+      <div class="arch-card-num">02</div>
+      <div class="arch-card-title">Conflict of Interest Declaration</div>
+      <div class="arch-card-body">All reviewers complete mandatory conflict-of-interest declarations prior to case assignment. Institutional relationships are disclosed and managed.</div>
+    </div>
+    <div class="arch-card reveal" style="transition-delay:0.2s">
+      <div class="arch-card-num">03</div>
+      <div class="arch-card-title">Methodology Versioning</div>
+      <div class="arch-card-body">All scoring methodologies are version-controlled with transparent publication dates, enabling longitudinal comparability across assessment periods.</div>
+    </div>
+    <div class="arch-card reveal" style="transition-delay:0.0s">
+      <div class="arch-card-num">04</div>
+      <div class="arch-card-title">QA Second-Layer Verification</div>
+      <div class="arch-card-body">Final scores undergo mandatory quality assurance review by an independent second reviewer before issuance.</div>
+    </div>
+    <div class="arch-card reveal" style="transition-delay:0.1s">
+      <div class="arch-card-num">05</div>
+      <div class="arch-card-title">Transparent Scoring Logic</div>
+      <div class="arch-card-body">All scoring criteria, weighting rationales, and interpretation guidelines are publicly documented in the BuitenScore Methodology Booklet.</div>
+    </div>
+    <div class="arch-card reveal" style="transition-delay:0.2s">
+      <div class="arch-card-num">06</div>
+      <div class="arch-card-title">Data Anonymization Controls</div>
+      <div class="arch-card-body">Case data is anonymized prior to review submission and processed under structured data governance protocols throughout the assessment lifecycle.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- RELATION TO BUITEN.AI -->
+<section class="relation-section">
+  <div class="section-label">Platform Relationship</div>
+  <h2 class="section-title reveal">BuitenScore within Buiten.ai</h2>
+  <p class="section-body reveal">Buiten.ai is the overarching European Clinical Governance platform. BuitenScore is one governance module within that infrastructure — with a distinct scope and function.</p>
+
+  <div class="relation-table-wrap reveal">
+    <table class="relation-table">
+      <thead>
+        <tr>
+          <th>BuitenScore</th>
+          <th>Buiten.ai Platform</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Hospital governance assessment module</td>
+          <td>Multi-agent clinical governance ecosystem</td>
+        </tr>
+        <tr>
+          <td>Human-led, evidence-based case review</td>
+          <td>AI-assisted signal infrastructure and orchestration</td>
+        </tr>
+        <tr>
+          <td>0–100 Governance Alignment Score output</td>
+          <td>Broader cross-border clinical governance infrastructure</td>
+        </tr>
+        <tr>
+          <td>No payment decisions — governance signals only</td>
+          <td>May support structured claims modules (separate function)</td>
+        </tr>
+        <tr>
+          <td>Voluntary, institutional-level assessment</td>
+          <td>Platform-level integration across governance domains</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHO IS IT FOR -->
+<section id="for-whom">
+  <div class="section-label">Stakeholders</div>
+  <h2 class="section-title reveal">Who Uses BuitenScore</h2>
+
+  <div class="audience-grid reveal">
+    <div class="audience-card">
+      <div class="audience-icon">🏥</div>
+      <div class="audience-type">Hospitals</div>
+      <ul class="audience-features">
+        <li>External structured governance visibility</li>
+        <li>Cross-border interpretability signal</li>
+        <li>Structured improvement roadmap</li>
+        <li>Voluntary and confidential process</li>
+      </ul>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🎓</div>
+      <div class="audience-type">Universities</div>
+      <ul class="audience-features">
+        <li>Research-grade governance dataset</li>
+        <li>Indication pattern modeling</li>
+        <li>Complication governance analysis</li>
+        <li>Cross-institutional comparability</li>
+      </ul>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🛡</div>
+      <div class="audience-type">Insurers</div>
+      <ul class="audience-features">
+        <li>Non-binding comparability signal</li>
+        <li>Reduced administrative friction</li>
+        <li>Structured documentation clarity</li>
+        <li>No reimbursement decision involvement</li>
+      </ul>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🏛</div>
+      <div class="audience-type">Policymakers</div>
+      <ul class="audience-features">
+        <li>Cross-border interpretability insights</li>
+        <li>System resilience signals</li>
+        <li>Structured governance benchmarks</li>
+        <li>Evidence-based policy support</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- LEGAL -->
+<section class="legal-section">
+  <div class="section-label">Legal Positioning</div>
+  <h2 class="section-title reveal">Scope & Limitations</h2>
+
+  <div class="legal-grid">
+    <div class="reveal">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.8rem;line-height:1.8">
+        BuitenScore is a governance signal instrument. All assessments are voluntary and evidence-based. BuitenScore does not:
+      </p>
+      <ul class="legal-does-not">
+        <li><span class="no-mark">✗</span> Issue reimbursement approvals or payment recommendations</li>
+        <li><span class="no-mark">✗</span> Replace or interact with national accreditation systems</li>
+        <li><span class="no-mark">✗</span> Provide clinical advice, diagnosis, or treatment guidance</li>
+        <li><span class="no-mark">✗</span> Act as an insurer, regulator, or legal authority</li>
+        <li><span class="no-mark">✗</span> Generate binding compliance determinations</li>
+      </ul>
+    </div>
+
+    <div class="legal-note reveal" style="transition-delay:0.15s">
+      <div class="legal-note-label">Core Statement</div>
+      <div class="legal-note-text">
+        BuitenScore provides governance alignment signals only. All assessments are voluntary, conducted under structured evidence-based methodology, and issued exclusively as structured comparability data — not regulatory determinations, clinical directives, or financial instruments.
+      </div>
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border-light)">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem">Methodology</div>
+        <div style="font-size:0.8rem;color:var(--muted)">All methodology versioned, publicly documented, and available in the BuitenScore Methodology Booklet. Request access below.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="cta-section">
+  <div class="section-label">Get Started</div>
+  <div class="cta-title reveal">Simulate Your<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--teal-light)">Governance Alignment Score</em></div>
+  <p class="cta-sub reveal">Request a structured assessment or explore our methodology documentation to understand how BuitenScore can provide external governance visibility for your institution.</p>
+  <div class="cta-actions reveal">
+    <a href="/cdn-cgi/l/email-protection#67040809130604132705120e13020914040815024904080a" class="btn-primary">Request a Demo</a>
+    <a href="#scoring" class="btn-secondary">Download Methodology Booklet</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-brand">BuitenScore</div>
+    <div class="footer-parent">A Governance Module of Buiten.ai</div>
+  </div>
+  <div class="footer-right">
+    Governance signals only — not reimbursement, accreditation, or regulatory authority.<br>
+    All assessments voluntary and evidence-based.<br>
+    buitenscore.com
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Animate score bars on visibility
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.score-bar-fill').forEach(fill => {
+          fill.classList.add('animated');
+        });
+        barObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const scoreBars = document.querySelector('.score-bars');
+  if (scoreBars) barObserver.observe(scoreBars);
+
+  // Smooth nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+ 
